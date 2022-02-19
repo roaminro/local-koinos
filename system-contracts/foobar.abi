@@ -1,0 +1,12 @@
+{
+    "methods": {
+        "foobar": {
+            "argument": "foobar.foobar_arguments",
+            "return": "foobar.foobar_result",
+            "description": "foobar",
+            "entry_point": "0xc3ab8ff1",
+            "read-only": true
+        }
+    },
+    "types": "CiB0ZXN0L2Fzc2VtYmx5L3Byb3RvL2Zvb2Jhci5wcm90bxIGZm9vYmFyIhIKEGZvb2Jhcl9hcmd1bWVudHMiDwoNZm9vYmFyX3Jlc3VsdEp0CgYSBAAADAEKCAoBDBIDAAASCggKAQISAwIADwoyCgIEABIEBwAJARomIEBkZXNjcmlwdGlvbiBmb29iYXIKIEByZWFkLW9ubHkgdHJ1ZQoKCgoDBAABEgMHCBgKCgoCBAESBAsADAEKCgoDBAEBEgMLCBViBnByb3RvMw=="
+}

@@ -4,9 +4,9 @@ set -e
 set -x
 
 mkdir -p /koinos/block_producer
-if [[ ! -f /koinos/block_producer/private.key ]]; then
-   koinos_get_dev_key -o /koinos/block_producer/private.key
-fi
+pushd /koinos/block_producer
+echo "5JY6DFyroXn3wthivhwXgpspAWbBoRrD49paoP6zWhDRAPcSSi4" > private.key
+popd
 
 mkdir -p /koinos/chain
 rsync -a -v --ignore-existing /koinos-config/genesis_data.json /koinos/chain/genesis_data.json
