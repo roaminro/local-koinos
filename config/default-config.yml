@@ -1,16 +1,14 @@
 global:
   amqp: amqp://guest:guest@amqp:5672/
   log-level: info
-  instance-id: Koinos
+  instance-id: Local-Koinos
 
 block_producer:
-  algorithm: pow
-  pow-contract-id: 15im92XgZiV39tcKMhMGtDYhJjXPMjUu8r
+  algorithm: federated
+  gossip-production: false
 
 jsonrpc:
   listen: /tcp/8080
 
 p2p:
   listen: /ip4/0.0.0.0/tcp/8888
-  peer:
-    - /dns4/seed.koinos.io/tcp/8888/p2p/QmRycTDNDiWSLtBCGYuLeZhKMuhJfCZVDwzasic3dticnb
