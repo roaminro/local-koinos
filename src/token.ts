@@ -28,14 +28,14 @@ export class Token {
     return this.contract.deploy(options)
   }
 
-  mint (to: string, value: string, options?: TransactionOptions) {
+  mint (to: string, value: string | number, options?: TransactionOptions) {
     return this.contract.functions.mint({
       to,
       value
     }, options)
   }
 
-  transfer (from: string, to: string, value: string, options?: DeployOptions) {
+  transfer (from: string, to: string, value: string | number, options?: DeployOptions) {
     return this.contract.functions.transfer({
       from,
       to,
@@ -52,6 +52,6 @@ export class Token {
   async decimals () {
     const { result } = await this.contract.functions.decimals()
 
-    return result?.value as string
+    return result?.value as number
   }
 }

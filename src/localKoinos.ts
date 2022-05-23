@@ -170,7 +170,7 @@ export class LocalKoinos {
     return receipt
   }
 
-  async deployKoinContract (options: Options) {
+  async deployKoinContract (options?: Options) {
     const { transaction } = await this.koin.deploy()
 
     if (options?.mode === 'manual') {
@@ -197,7 +197,7 @@ export class LocalKoinos {
 
   async mintKoinDefaultAccounts (options?: Options) {
     const decimals = await this.koin.decimals()
-    const value = 50000 * 10 ** Number(decimals)
+    const value = 50000 * 10 ** decimals
 
     const operations = []
 
@@ -226,7 +226,7 @@ export class LocalKoinos {
       const acct = this.accounts[index]
       const balance = await this.koin.balanceOf(acct.address)
 
-      console.log(chalk.green(`${acct.name}:   ${acct.address} (${Number(balance) / 10 ** Number(decimals)} tKOIN)`))
+      console.log(chalk.green(`${acct.name}:   ${acct.address} (${Number(balance) / 10 ** decimals} tKOIN)`))
       console.log(chalk.green(`Private Key:  ${acct.wif}\n`))
     }
     console.log()
@@ -239,14 +239,14 @@ export class LocalKoinos {
     const token = new Token(signer.address, signer)
     const decimals = await token.decimals()
 
-    const { transaction } = await token.mint(to, (Number(value) * 10 ** Number(decimals)).toString())
+    const { transaction } = await token.mint(to, (Number(value) * 10 ** decimals).toString())
 
     await transaction?.wait()
 
     console.log(chalk.green(`Minted ${value} tokens (${token.address()}) to ${to}\n`))
   }
 
-  async deployContract (wif: string, wasm: string | Buffer, abi: Abi, options: DeployOptions) {
+  async deployContract (wif: string, wasm: string | Buffer, abi: Abi, options?: DeployOptions) {
     const signer = Signer.fromWif(wif)
     signer.provider = this.provider
 
