@@ -1,0 +1,118 @@
+#!/usr/bin/env node
+
+const { program, Option } = require('commander')
+const pkg = require('../package.json')
+const { LocalKoinos } = require('../src/index')
+
+let localKoinos
+
+process.on('uncaughtException', (err) => {
+  console.log(err.message)
+  localKoinos.stopNode()
+  process.exit()
+})
+
+process.on('unhandledRejection', (err) => {
+  console.log(err.message)
+  localKoinos.stopNode()
+  process.exit()
+})
+
+process.once('SIGTERM', () => {
+  console.log('SIGTERM received...')
+  localKoinos.stopNode()
+  process.exit()
+})
+
+process.once('SIGINT', () => {
+  console.log('SIGINT received...')
+  localKoinos.stopNode()
+  process.exit()
+})
+
+program
+  .name(pkg.name)
+  .description(pkg.description)
+  .version(pkg.version)
+
+program.command('start')
+  .description('Start a local Koinos node')
+  .option('-n, --node-name <name>', 'Name of the node')
+  .option('-i, --mining-interval <interval>', 'Block mining interval')
+  .option('-l, --logs', 'Display block production logs', true)
+  .option('-d, --docker-compose <path>', 'Path to docker-compose file')
+  .option('-e, --env-file <path>', 'Path to docker-compose env file')
+  .option('-r, --rpc <url>', 'Koinos JSON RPC server url')
+  .option('-a, --amqp <url>', 'Koinos AMQP  url')
+  .option('-k, --no-koin', 'Do not deploy Koin contract')
+  .option('-t, --no-mint', 'Do not mint Koin to default accounts')
+  .addOption(new Option('-m, --mode <mode>', 'Block production mode').choices(['auto', 'interval', 'manual']))
+  .action(async (options) => {
+    localKoinos = new LocalKoinos(options)
+
+    await localKoinos.startNode()
+    await localKoinos.startBlockProduction(options)
+
+    if (options.koin) {
+      await localKoinos.deployKoinContract(options)
+    }
+
+    if (options.koin && options.mint) {
+      await localKoinos.mintKoinDefaultAccounts(options)
+    }
+  })
+
+program.command('stop')
+  .description('Stop a local Koinos node')
+  .option('-n, --node-name <name>', 'name of the node')
+  .option('-d, --docker-compose <path>', 'path to docker-compose file')
+  .action((options) => {
+    new LocalKoinos(options).stopNode()
+  })
+
+program.command('deploy-token')
+  .description('Deploy a new token')
+  .argument('<wif>', 'WIF of the account deploying the token')
+  .option('-r, --rpc <url>', 'Koinos JSON RPC server url')
+  .action(async (wif, options) => {
+    localKoinos = new LocalKoinos(options)
+
+    await localKoinos.deployTokenContract(wif)
+  })
+
+program.command('mint-tokens')
+  .description('Mint tokens to an address')
+  .argument('<wif>', 'WIF of the account deploying the token')
+  .argument('<to>', 'Recipient of the tokens')
+  .argument('<amount>', 'Amount of tokens to mint')
+  .option('-r, --rpc <url>', 'Koinos JSON RPC server url')
+  .action(async (wif, to, amount, options) => {
+    localKoinos = new LocalKoinos(options)
+
+    await localKoinos.mintToken(wif, to, amount)
+  })
+
+program.command('deploy-contract')
+  .description('deploy a contract')
+  .argument('<wif>', 'WIF of the account deploying the contract')
+  .argument('<wasm>', 'Path to the contract WASM file')
+  .option('-a, --abi <path>', 'Path to contract ABI file')
+  .option('-c, --authorizes-call-contract', 'Override autorizes call contract')
+  .option('-t, --authorizes-transaction-application', 'Override autorizes transaction application')
+  .option('-u, --authorizes-upload-contract', 'Override autorizes upload contract')
+  .option('-r, --rpc <url>', 'Koinos JSON RPC server url')
+  .action(async (wif, wasm, options) => {
+    localKoinos = new LocalKoinos(options)
+
+    await localKoinos.deployContract(wif, wasm, undefined, options)
+  })
+
+program.command('restart-chain')
+  .description('Restart chain')
+  .action(async () => {
+    localKoinos = new LocalKoinos()
+
+    localKoinos.restartChain()
+  })
+
+program.parse()

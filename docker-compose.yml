@@ -1,104 +1,58 @@
+volumes:
+   config_volume:
+
 services:
    amqp:
-      image: rabbitmq:3-management
+      image: rabbitmq:alpine
       ports:
-         - "${AMQP_INTERFACE:-127.0.0.1}:5672:5672"
-         - "${AMQP_INTERFACE:-127.0.0.1}:15672:15672"
+         - "5672:5672"
 
-   config:
+   node_config:
       build:
-         context: ./config
-         args:
-            - CONFIG_TAG=${CONFIG_TAG:-latest}
+         context: ./node_config
       environment:
          - DESCRIPTORS_TAG=${DESCRIPTORS_TAG:-master}
       volumes:
-         - "${BASEDIR}:/koinos"
+         - config_volume:/koinos
 
    mempool:
       image: koinos/koinos-mempool:${MEMPOOL_TAG:-latest}
       depends_on:
-         - amqp
-         - config
-      volumes:
-         - "${BASEDIR}:/koinos"
-      command: --basedir=/koinos
+         amqp:
+            condition: service_started
+         node_config:
+            condition: service_completed_successfully
+      command: -a amqp://guest:guest@amqp:5672/
 
    block_store:
       image: koinos/koinos-block-store:${BLOCK_STORE_TAG:-latest}
       depends_on:
-         - amqp
-         - config
-      volumes:
-         - "${BASEDIR}:/koinos"
-      command: --basedir=/koinos
+         amqp:
+            condition: service_started
+         node_config:
+            condition: service_completed_successfully
+      command: -a amqp://guest:guest@amqp:5672/
 
    chain:
       image: koinos/koinos-chain:${CHAIN_TAG:-latest}
-      depends_on:
-         - amqp
-         - block_store
-         - mempool
-         - config
       volumes:
-         - "${BASEDIR}:/koinos"
-      command: --basedir=/koinos
-
-   p2p:
-      image: koinos/koinos-p2p:${P2P_TAG:-latest}
+         - config_volume:/root/.koinos
       depends_on:
-         - amqp
-         - block_store
-         - chain
-         - config
-      volumes:
-         - "${BASEDIR}:/koinos"
-      ports:
-         - "${P2P_INTERFACE:-0.0.0.0}:8888:8888"
-      command: --basedir=/koinos
-
-   block_producer:
-      image: koinos/koinos-block-producer:${BLOCK_PRODUCER_TAG:-latest}
-      profiles: ["block_producer", "all"]
-      depends_on:
-         - amqp
-         - mempool
-         - chain
-         - config
-      volumes:
-         - "${BASEDIR}:/koinos"
-      command: --basedir=/koinos
+         amqp:
+            condition: service_started
+         node_config:
+            condition: service_completed_successfully
+      command: -a amqp://guest:guest@amqp:5672/ --reset true
 
    jsonrpc:
       image: koinos/koinos-jsonrpc:${JSONRPC_TAG:-latest}
-      profiles: ["jsonrpc", "all"]
-      depends_on:
-         - amqp
-         - config
-      volumes:
-         - "${BASEDIR}:/koinos"
       ports:
-         - "${JSONRPC_INTERFACE:-0.0.0.0}:8080:8080"
-      command: --basedir=/koinos
-
-   transaction_store:
-      image: koinos/koinos-transaction-store:${TRANSACTION_STORE_TAG:-latest}
-      profiles: ["transaction_store", "all"]
-      depends_on:
-         - amqp
-         - chain
-         - config
+         - "8080:8080"
       volumes:
-         - "${BASEDIR}:/koinos"
-      command: --basedir=/koinos
-
-   contract_meta_store:
-      image: koinos/koinos-contract-meta-store:${CONTRACT_META_STORE_TAG:-latest}
-      profiles: ["contract_meta_store", "all"]
+         - config_volume:/root/.koinos
       depends_on:
-         - amqp
-         - chain
-         - config
-      volumes:
-         - "${BASEDIR}:/koinos"
-      command: --basedir=/koinos
+         amqp:
+            condition: service_started
+         node_config:
+            condition: service_completed_successfully
+      command: -a amqp://guest:guest@amqp:5672/ -l /tcp/8080
