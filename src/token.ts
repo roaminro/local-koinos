@@ -24,18 +24,18 @@ export class Token {
     return this.contract.getId()
   }
 
-  deploy (options: DeployOptions | undefined = undefined) {
+  deploy (options?: DeployOptions) {
     return this.contract.deploy(options)
   }
 
-  mint (to: string, value: string, options: TransactionOptions | undefined = undefined) {
+  mint (to: string, value: string, options?: TransactionOptions) {
     return this.contract.functions.mint({
       to,
       value
     }, options)
   }
 
-  transfer (from: string, to: string, value: string, options: DeployOptions) {
+  transfer (from: string, to: string, value: string, options?: DeployOptions) {
     return this.contract.functions.transfer({
       from,
       to,

@@ -39,7 +39,7 @@ export class LocalKoinos {
   intervalBlockProducerTimeout: NodeJS.Timeout | null = null
   accounts: Account[] = []
 
-  constructor (options: Options | undefined = undefined) {
+  constructor (options?: Options) {
     this.rpcUrl = options?.rpc || DEFAULT_RPC_URL
     this.amqpurl = options?.amqp || DEFAULT_AMQP_URL
     this.dockerComposeFile = options?.dockerComposeFile || DEFAULT_DOCKER_COMPOSE_FILE
@@ -139,7 +139,7 @@ export class LocalKoinos {
     }
   }
 
-  async produceBlock (transactions: TransactionJson | null, logs = true) {
+  async produceBlock (transactions?: TransactionJson, logs = true) {
     if (this.stopping === true) return
     const headInfo = await this.provider.getHeadInfo()
 
@@ -170,11 +170,11 @@ export class LocalKoinos {
     return receipt
   }
 
-  async deployKoinContract (options : Options) {
+  async deployKoinContract (options: Options) {
     const { transaction } = await this.koin.deploy()
 
     if (options?.mode === 'manual') {
-      await this.produceBlock(null, false)
+      await this.produceBlock(undefined, false)
     } else {
       await transaction.wait()
     }
@@ -195,7 +195,7 @@ export class LocalKoinos {
     console.log(chalk.green(`\nDeployed Token contract at address ${token.address()}\n`))
   }
 
-  async mintKoinDefaultAccounts (options: Options) {
+  async mintKoinDefaultAccounts (options?: Options) {
     const decimals = await this.koin.decimals()
     const value = 50000 * 10 ** Number(decimals)
 
@@ -215,7 +215,7 @@ export class LocalKoinos {
     const { transaction } = await this.koin.signer.sendTransaction(preparedTx)
 
     if (options?.mode === 'manual') {
-      await this.produceBlock(null, false)
+      await this.produceBlock(undefined, false)
     } else {
       await transaction.wait()
     }
@@ -269,12 +269,12 @@ export class LocalKoinos {
     return contract
   }
 
-  async intervalBlockProducer (interval: number, logs: boolean) {
-    await this.produceBlock(null, logs)
+  async intervalBlockProducer (interval: number, logs = true) {
+    await this.produceBlock(undefined, logs)
     this.intervalBlockProducerTimeout = setTimeout(() => this.intervalBlockProducer(interval, logs), interval)
   }
 
-  async autoBlockProducer (logs: boolean) {
+  async autoBlockProducer (logs = true) {
     console.log(chalk.green('Starting auto block production...\n'))
 
     const connection = await amqp.connect(this.amqpurl)
@@ -287,7 +287,7 @@ export class LocalKoinos {
     channel.consume(
       q1.queue,
       async () => {
-        await this.produceBlock(null, logs)
+        await this.produceBlock(undefined, logs)
       },
       {
         noAck: true
@@ -319,14 +319,14 @@ export class LocalKoinos {
     console.log(chalk.green('Waiting for new blocks to be produced...\n'))
   }
 
-  async startBlockProduction (options: Options) {
+  async startBlockProduction (options?: Options) {
     const logs = options?.logs === true
     const mode = options?.mode || 'auto'
 
     if (mode === 'auto') {
       await this.autoBlockProducer(logs)
     } else if (mode === 'interval') {
-      const interval = Number(options.miningInterval || DEFAULT_MINING_INTERVAL)
+      const interval = Number(options?.miningInterval || DEFAULT_MINING_INTERVAL)
       console.log(chalk.green(`Starting interval block production (new block every ${interval}ms)...\n`))
       await this.intervalBlockProducer(interval, logs)
     } else {
