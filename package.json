@@ -1,7 +1,7 @@
 {
   "name": "local-koinos",
   "description": "Local Koinos CLI'",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "main": "lib/index.js",
   "license": "MIT",
   "bin": {
@@ -27,6 +27,6 @@
   "scripts": {
     "lint": "eslint",
     "build": "rimraf lib && tsc",
-    "prepublish": "lint && build"
+    "prepublishOnly": "yarn lint && yarn build"
   }
 }

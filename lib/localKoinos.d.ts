@@ -15,7 +15,7 @@ export declare class LocalKoinos {
     stopping: boolean;
     intervalBlockProducerTimeout: NodeJS.Timeout | null;
     accounts: Account[];
-    constructor(options: Options);
+    constructor(options?: Options | undefined);
     initAccounts(): void;
     getAccounts(): Account[];
     getProvider(): Provider;

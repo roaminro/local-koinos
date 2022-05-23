@@ -39,7 +39,7 @@ export class LocalKoinos {
   intervalBlockProducerTimeout: NodeJS.Timeout | null = null
   accounts: Account[] = []
 
-  constructor (options: Options) {
+  constructor (options: Options | undefined = undefined) {
     this.rpcUrl = options?.rpc || DEFAULT_RPC_URL
     this.amqpurl = options?.amqp || DEFAULT_AMQP_URL
     this.dockerComposeFile = options?.dockerComposeFile || DEFAULT_DOCKER_COMPOSE_FILE
