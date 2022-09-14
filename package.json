@@ -1,7 +1,7 @@
 {
   "name": "local-koinos",
   "description": "Local Koinos CLI'",
-  "version": "0.0.5",
+  "version": "0.4.0",
   "main": "lib/index.js",
   "license": "MIT",
   "bin": {
@@ -11,8 +11,8 @@
     "amqplib": "^0.9.1",
     "chalk": "4.1.2",
     "commander": "^9.0.0",
-    "koilib": "^3.1.1",
-    "koinos-proto-js": "^0.0.3"
+    "koilib": "^5.0.0",
+    "@koinos/proto-js": "^0.4.5"
   },
   "devDependencies": {
     "@types/amqplib": "^0.8.2",
