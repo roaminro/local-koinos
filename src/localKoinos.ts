@@ -179,9 +179,9 @@ export class LocalKoinos {
       await transaction.wait()
     }
 
-    await this.setSystemContract(this.koin.address(), true, options)
-
     console.log(chalk.green(`Deployed Koin contract at address ${this.koin.address()}\n`))
+
+    await this.setSystemContract(this.koin.address(), true, options)
   }
 
   async setSystemContract(contractId: string, systemContract: boolean, options?: Options) {
@@ -199,9 +199,6 @@ export class LocalKoinos {
     })
 
     const { transaction } = await this.genesisSigner.sendTransaction(preparedTx)
-
-    console.log(transaction)
-    console.log(transaction.operations)
 
     if (options?.mode === 'manual') {
       await this.produceBlock(undefined, false)

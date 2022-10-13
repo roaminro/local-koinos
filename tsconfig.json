@@ -9,8 +9,10 @@
         "allowJs": true,
         "sourceMap": true,
         "declaration": true,
+        "noImplicitAny": true,
         "types": [
-            "node"
+            "node",
+            "@types/jest"
         ],
         "outDir": "lib"
     },
