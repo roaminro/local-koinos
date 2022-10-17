@@ -1,5 +1,5 @@
 {
-  "name": "local-koinos",
+  "name": "@roamin/local-koinos",
   "description": "Local Koinos CLI'",
   "version": "0.4.0",
   "main": "lib/index.js",
