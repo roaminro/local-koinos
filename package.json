@@ -12,7 +12,7 @@
     "amqplib": "^0.9.1",
     "chalk": "4.1.2",
     "commander": "^9.0.0",
-    "koilib": "^5.1.1"
+    "koilib": "^5.2.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.8.2",

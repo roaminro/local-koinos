@@ -2399,10 +2399,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-koilib@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/koilib/-/koilib-5.1.1.tgz#b5ef5709e1dd5909c89674d280cf2072a09efd9b"
-  integrity sha512-0mIf8Y7syHA5TN4BAG3Cco9Y8nGOI709n9gTc9S/LZogtUvI6CiAPKFcupItoiO4ZAHVt89HdVSJ+F8V9PC9YQ==
+koilib@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/koilib/-/koilib-5.2.0.tgz#6970268b3eb701542b661d361cfa6c17b90e8fbd"
+  integrity sha512-15gFUyQ6dBtWlYDoeuxvw9lW53HYpIN6O8HMTcyEgV8/fV5+PbT4bcjFClMOKObGMLoHjofQhTMKibpuue4MSg==
   dependencies:
     "@noble/hashes" "^1.1.2"
     "@noble/secp256k1" "^1.6.3"
