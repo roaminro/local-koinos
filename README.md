@@ -1,3 +1,5 @@
+[![Test](https://github.com/roaminro/local-koinos/actions/workflows/test.yml/badge.svg)](https://github.com/roaminro/local-koinos/actions/workflows/test.yml)
+
 # Local-Koinos
 
 Local-Koinos is a set of scripts and tools that will help you spin up a devnet in minutes on your local machine.
