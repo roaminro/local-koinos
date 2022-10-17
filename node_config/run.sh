@@ -13,10 +13,9 @@ then
     rsync -a -v --ignore-existing /koinos-config/private.key /koinos/block_producer/private.key
 
     mkdir -p /koinos/jsonrpc/descriptors
-    #pushd /koinos/jsonrpc/descriptors
+    pushd /koinos/jsonrpc/descriptors
 
-    #wget https://github.com/koinos/koinos-proto-descriptors/raw/$DESCRIPTORS_TAG/koinos_descriptors.pb
-    rsync -a -v --ignore-existing /koinos-config/koinos_descriptors.pb /koinos/jsonrpc/descriptors/koinos_descriptors.pb
+    wget https://github.com/koinos/koinos-proto-descriptors/raw/master/koinos_descriptors.pb
 
-    #popd
+    popd
 fi

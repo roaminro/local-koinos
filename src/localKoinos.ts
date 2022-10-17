@@ -1,5 +1,5 @@
 import { Provider, Signer, Contract } from "koilib"
-import { koinos } from 'koinos-proto-js'
+import { koinos } from '@koinos/proto-js'
 import amqp from 'amqplib'
 import chalk from 'chalk'
 import path from 'path'
@@ -39,7 +39,7 @@ export class LocalKoinos {
   intervalBlockProducerTimeout: NodeJS.Timeout | null = null
   accounts: Account[] = []
 
-  constructor (options?: Options) {
+  constructor(options?: Options) {
     this.rpcUrl = options?.rpc || DEFAULT_RPC_URL
     this.amqpurl = options?.amqp || DEFAULT_AMQP_URL
     this.dockerComposeFile = options?.dockerComposeFile || DEFAULT_DOCKER_COMPOSE_FILE
@@ -59,7 +59,7 @@ export class LocalKoinos {
     this.initAccounts()
   }
 
-  initAccounts () {
+  initAccounts() {
     let name = 'Genesis account'
     let signer = Signer.fromWif(GENESIS_WIF)
 
@@ -93,15 +93,15 @@ export class LocalKoinos {
     }
   }
 
-  getAccounts () {
+  getAccounts() {
     return this.accounts
   }
 
-  getProvider () {
+  getProvider() {
     return this.provider
   }
 
-  async startNode () {
+  async startNode() {
     console.log(chalk.blue(`Starting node ${this.nodeName}...\n`))
 
     const cmd = `docker-compose -p ${this.nodeName} -f ${this.dockerComposeFile} --env-file ${this.envFile} up -d`
@@ -114,7 +114,7 @@ export class LocalKoinos {
     console.log(chalk.green(`Node started, JSON-RPC server available at ${this.rpcUrl}\n`))
   }
 
-  stopNode () {
+  stopNode() {
     this.stopping = true
     console.log(chalk.blue(`Stopping node ${this.nodeName}...`))
 
@@ -129,7 +129,7 @@ export class LocalKoinos {
     console.log(chalk.green('Node successfuly stopped'))
   }
 
-  async awaitChain () {
+  async awaitChain() {
     if (this.stopping === true) return
     try {
       await this.provider.getHeadInfo()
@@ -139,7 +139,7 @@ export class LocalKoinos {
     }
   }
 
-  async produceBlock (transactions?: TransactionJson, logs = true) {
+  async produceBlock(transactions?: TransactionJson, logs = true) {
     if (this.stopping === true) return
     const headInfo = await this.provider.getHeadInfo()
 
@@ -170,7 +170,7 @@ export class LocalKoinos {
     return receipt
   }
 
-  async deployKoinContract (options?: Options) {
+  async deployKoinContract(options?: Options) {
     const { transaction } = await this.koin.deploy()
 
     if (options?.mode === 'manual') {
@@ -180,9 +180,36 @@ export class LocalKoinos {
     }
 
     console.log(chalk.green(`Deployed Koin contract at address ${this.koin.address()}\n`))
+
+    await this.setSystemContract(this.koin.address(), true, options)
   }
 
-  async deployTokenContract (wif: string) {
+  async setSystemContract(contractId: string, systemContract: boolean, options?: Options) {
+    const operations = [
+      {
+        set_system_contract: {
+          contract_id: contractId,
+          system_contract: systemContract
+        }
+      }
+    ]
+
+    const preparedTx = await this.genesisSigner.prepareTransaction({
+      operations
+    })
+
+    const { transaction } = await this.genesisSigner.sendTransaction(preparedTx)
+
+    if (options?.mode === 'manual') {
+      await this.produceBlock(undefined, false)
+    } else {
+      await transaction.wait()
+    }
+
+    console.log(chalk.green(`Set system contract for ${this.koin.address()} to ${systemContract}\n`))
+  }
+
+  async deployTokenContract(wif: string) {
     const signer = Signer.fromWif(wif)
     signer.provider = this.provider
 
@@ -195,7 +222,7 @@ export class LocalKoinos {
     console.log(chalk.green(`\nDeployed Token contract at address ${token.address()}\n`))
   }
 
-  async mintKoinDefaultAccounts (options?: Options) {
+  async mintKoinDefaultAccounts(options?: Options) {
     const decimals = await this.koin.decimals()
     const value = 50000 * 10 ** decimals
 
@@ -232,7 +259,7 @@ export class LocalKoinos {
     console.log()
   }
 
-  async mintToken (wif: string, to: string, value: string) {
+  async mintToken(wif: string, to: string, value: string) {
     const signer = Signer.fromWif(wif)
     signer.provider = this.provider
 
@@ -246,7 +273,7 @@ export class LocalKoinos {
     console.log(chalk.green(`Minted ${value} tokens (${token.address()}) to ${to}\n`))
   }
 
-  async deployContract (wif: string, wasm: string | Buffer, abi: Abi, options?: DeployOptions) {
+  async deployContract(wif: string, wasm: string | Buffer, abi: Abi, options?: DeployOptions) {
     const signer = Signer.fromWif(wif)
     signer.provider = this.provider
 
@@ -269,12 +296,12 @@ export class LocalKoinos {
     return contract
   }
 
-  async intervalBlockProducer (interval: number, logs = true) {
+  async intervalBlockProducer(interval: number, logs = true) {
     await this.produceBlock(undefined, logs)
     this.intervalBlockProducerTimeout = setTimeout(() => this.intervalBlockProducer(interval, logs), interval)
   }
 
-  async autoBlockProducer (logs = true) {
+  async autoBlockProducer(logs = true) {
     console.log(chalk.green('Starting auto block production...\n'))
 
     const connection = await amqp.connect(this.amqpurl)
@@ -295,7 +322,7 @@ export class LocalKoinos {
     )
   }
 
-  async awaitNewBlocks () {
+  async awaitNewBlocks() {
     const connection = await amqp.connect(this.amqpurl)
     const channel = await connection.createChannel()
 
@@ -319,7 +346,7 @@ export class LocalKoinos {
     console.log(chalk.green('Waiting for new blocks to be produced...\n'))
   }
 
-  async startBlockProduction (options?: Options) {
+  async startBlockProduction(options?: Options) {
     const logs = options?.logs === true
     const mode = options?.mode || 'auto'
 
@@ -334,7 +361,7 @@ export class LocalKoinos {
     }
   }
 
-  async restartChain () {
+  async restartChain() {
     const cmd = `docker restart ${this.nodeName}_chain_1`
     console.log(chalk.blue(cmd))
     execSync(cmd, { stdio: 'inherit' })
