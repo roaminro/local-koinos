@@ -59,7 +59,7 @@ await localKoinos.mintKoinDefaultAccounts();
 // get the accounts initialized with `mintKoinDefaultAccounts`
 const [genesis, koin, acct1] = localKoinos.getAccounts();
 
-// deploy a contract to the devnet (returns an instance of Koilib Contract
+// deploy a contract to the devnet (returns an instance of a Koilib Contract)
 const contract = await localKoinos.deployContract(acct1.wif, './calculator-contract.wasm', abi);
 
 // call your contract functions
