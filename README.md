@@ -69,3 +69,6 @@ expect(result!.value).toBe('9');
 // stop local-koinos node
 await localKoinos.stopNode();
 ```
+
+## Example of programmatic usage using Jest
+https://github.com/roaminro/local-koinos/blob/0ddc2bf468418fa743c017a457ba9f7701e229eb/tests/tests.spec.ts#L1-L59
