@@ -8,7 +8,30 @@ Local-Koinos is a set of scripts and tools that will help you spin up a devnet o
 
 You will need to install Docker on MacOS, Linux or Windows first. You can follow their instructions for installation [here](https://www.docker.com/products/docker-desktop). Docker desktop comes with a recent version of docker-compose.
 
-## Example usage
+## Installation
+```sh
+# with npm
+npm install -g @roamin/local-koinos
+
+# with yarn
+yarn global add @roamin/local-koinos
+```
+
+## Usage as CLI
+```sh
+# start a local Koinos devnet (default mode is "auto")
+# there are 3 modes available:
+# - auto: produces a block every time you submit a transaction to the mempool
+# - interval: creates a block every X seconds with all transactions available in the mempool
+# - manual: awaits for blocks to be submitted manually
+# a local JSON RPC service will be available by default at http://127.0.0.1:8080
+local-koinos start
+
+# stop the node
+local-koinos stop
+```
+
+## Example of programmatic usage using JavaScript/TypeScript
 
 ```js
 import { LocalKoinos, Token, Signer } from '@roamin/local-koinos';
