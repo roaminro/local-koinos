@@ -22,8 +22,8 @@ yarn global add @roamin/local-koinos
 # start a local Koinos devnet (default mode is "auto")
 # there are 3 modes available:
 # - auto: produces a block every time you submit a transaction to the mempool
-# - interval: creates a block every X seconds with all transactions available in the mempool
-# - manual: awaits for blocks to be submitted manually
+# - interval: creates a block every X seconds with all transactions available in the mempool (default is every 3 seconds)
+# - manual: awaits for blocks to be manually submitted to the chain
 # a local JSON RPC service will be available by default at http://127.0.0.1:8080
 local-koinos start
 
