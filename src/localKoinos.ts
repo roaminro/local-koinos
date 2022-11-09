@@ -54,7 +54,7 @@ export class LocalKoinos {
     // Koin contract
     const koinSigner = Signer.fromWif(KOIN_WIF)
     koinSigner.provider = this.provider
-    this.koin = new Token(koinSigner.address, koinSigner)
+    this.koin = new Token(koinSigner.address, koinSigner, true)
 
     this.initAccounts()
   }
@@ -62,6 +62,7 @@ export class LocalKoinos {
   initAccounts() {
     let name = 'Genesis account'
     let signer = Signer.fromWif(GENESIS_WIF)
+    signer.provider = this.provider
 
     this.accounts.push({
       name,
@@ -72,6 +73,7 @@ export class LocalKoinos {
 
     name = 'Koin account'
     signer = Signer.fromWif(KOIN_WIF)
+    signer.provider = this.provider
 
     this.accounts.push({
       name,
@@ -83,6 +85,7 @@ export class LocalKoinos {
     for (let index = 1; index <= 10; index++) {
       name = `Account #${index}`
       signer = Signer.fromSeed(name)
+      signer.provider = this.provider
 
       this.accounts.push({
         name,
@@ -176,7 +179,7 @@ export class LocalKoinos {
     if (options?.mode === 'manual') {
       await this.produceBlock(undefined, false)
     } else {
-      await transaction.wait()
+      await transaction!.wait()
     }
 
     console.log(chalk.green(`Deployed Koin contract at address ${this.koin.address()}\n`))
@@ -217,9 +220,11 @@ export class LocalKoinos {
 
     const { transaction } = await token.deploy()
 
-    await transaction.wait()
+    await transaction!.wait()
 
     console.log(chalk.green(`\nDeployed Token contract at address ${token.address()}\n`))
+
+    return token
   }
 
   async mintKoinDefaultAccounts(options?: Options) {
@@ -289,7 +294,7 @@ export class LocalKoinos {
 
     const { transaction } = await contract.deploy(options)
 
-    await transaction.wait()
+    await transaction!.wait()
 
     console.log(chalk.green(`Deployed contract at address ${signer.address}\n`))
 
