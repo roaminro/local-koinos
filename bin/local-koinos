@@ -2,7 +2,7 @@
 
 const { program, Option } = require('commander')
 const pkg = require('../package.json')
-const { LocalKoinos } = require('../src/index')
+const { LocalKoinos } = require('../lib/index')
 
 let localKoinos
 
