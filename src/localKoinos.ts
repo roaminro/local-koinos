@@ -11,9 +11,6 @@ import { Account, Options } from "./interface"
 import { Token } from "./token"
 import { Abi, BlockJson, DeployOptions, TransactionJson } from "koilib/lib/interface"
 
-// @ts-ignore
-import pkg from '../package.json'
-
 const DEFAULT_RPC_URL = 'http://127.0.0.1:8080'
 const DEFAULT_AMQP_URL = 'amqp://guest:guest@localhost:5672/'
 const KOINOS_AMQP_EXCHANGE = 'koinos.event'
@@ -44,7 +41,7 @@ export class LocalKoinos {
     this.amqpurl = options?.amqp || DEFAULT_AMQP_URL
     this.dockerComposeFile = options?.dockerComposeFile || DEFAULT_DOCKER_COMPOSE_FILE
     this.envFile = options?.envFile || DEFAULT_DOCKER_COMPOSE_ENV_FILE
-    this.nodeName = options?.nodeName || pkg.name
+    this.nodeName = options?.nodeName || 'localkoinos'
 
     this.provider = new Provider(this.rpcUrl)
 
