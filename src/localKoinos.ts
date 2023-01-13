@@ -104,7 +104,7 @@ export class LocalKoinos {
   async startNode() {
     console.log(chalk.blue(`Starting node ${this.nodeName}...\n`))
 
-    const cmd = `docker-compose -p ${this.nodeName} -f ${this.dockerComposeFile} --env-file ${this.envFile} up -d`
+    const cmd = `composecmd() { if [ -x "$(command -v docker-compose-v1)" ] ; then docker-compose-v1 "$@" ; else docker-compose "$@" ; fi ; } ; composecmd -p ${this.nodeName} -f ${this.dockerComposeFile} --env-file ${this.envFile} up -d`
     console.log(chalk.blue(cmd))
     execSync(cmd, { stdio: 'inherit' })
 
@@ -122,7 +122,7 @@ export class LocalKoinos {
       clearTimeout(this.intervalBlockProducerTimeout)
     }
 
-    const cmd = `docker-compose -p ${this.nodeName} -f ${this.dockerComposeFile} down -v`
+    const cmd = `composecmd() { if [ -x "$(command -v docker-compose-v1)" ] ; then docker-compose-v1 "$@" ; else docker-compose "$@" ; fi ; } ; composecmd -p ${this.nodeName} -f ${this.dockerComposeFile} down -v`
     console.log(chalk.blue(cmd))
     execSync(cmd, { stdio: 'inherit' })
 
