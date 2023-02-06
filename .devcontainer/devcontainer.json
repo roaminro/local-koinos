@@ -4,8 +4,18 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
+  "initializeCommand": "if [ \"${CODESPACES}\" != \"true\" ]; then umask 177 && touch ~/.npmrc; fi",
+  "runArgs": ["--add-host=host.docker.internal:host-gateway"],
   "remoteUser": "node",
   "features": {
-    "ghcr.io/devcontainers/features/node:1": {}
-  }
+		"ghcr.io/devcontainers/features/node:1": {},
+		"docker-from-docker": {
+			"version": "latest",
+			"moby": true,
+			"dockerDashComposeVersion": "v2"
+		}
+	},
+  "mounts": [
+    "source=${localEnv:HOME}/.npmrc,target=/home/node/.npmrc,type=bind",
+  ]
 }

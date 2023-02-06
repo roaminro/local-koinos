@@ -7,9 +7,9 @@ services:
       ports:
          - "5672:5672"
 
-   node_config:
+   config:
       build:
-         context: ./node_config
+         context: ./config
       environment:
          - DESCRIPTORS_TAG=${DESCRIPTORS_TAG:-master}
       volumes:
@@ -20,7 +20,7 @@ services:
       depends_on:
          amqp:
             condition: service_started
-         node_config:
+         config:
             condition: service_completed_successfully
       command: -a amqp://guest:guest@amqp:5672/
 
@@ -29,7 +29,7 @@ services:
       depends_on:
          amqp:
             condition: service_started
-         node_config:
+         config:
             condition: service_completed_successfully
       command: -a amqp://guest:guest@amqp:5672/
 
@@ -40,7 +40,7 @@ services:
       depends_on:
          amqp:
             condition: service_started
-         node_config:
+         config:
             condition: service_completed_successfully
       command: -a amqp://guest:guest@amqp:5672/ --reset true
 
@@ -53,6 +53,6 @@ services:
       depends_on:
          amqp:
             condition: service_started
-         node_config:
+         config:
             condition: service_completed_successfully
-      command: -a amqp://guest:guest@amqp:5672/ -l /tcp/8080
+      command: -a amqp://guest:guest@amqp:5672/ -L /tcp/8080
