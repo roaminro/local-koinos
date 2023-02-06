@@ -1,6 +1,6 @@
 // See https://containers.dev/implementors/json_reference/ for configuration reference
 {
-  "name": "My Koinos Wallet",
+  "name": "Local Koinos",
   "build": {
     "dockerfile": "Dockerfile"
   },
