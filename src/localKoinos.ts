@@ -209,6 +209,36 @@ export class LocalKoinos {
     console.log(chalk.green(`Set system contract for ${this.koin.address()} to ${systemContract}\n`))
   }
 
+  async setSystemCall(callId: number, contractId: string, entryPoint: number, options?: Options) {
+    const operations = [
+      {
+        set_system_call: {
+          call_id: callId,
+          target: {
+            system_call_bundle: {
+              contract_id: contractId,
+              entry_point: entryPoint
+            }
+          },
+        },
+      }
+    ]
+
+    const preparedTx = await this.genesisSigner.prepareTransaction({
+      operations
+    })
+
+    const { transaction } = await this.genesisSigner.sendTransaction(preparedTx)
+
+    if (options?.mode === 'manual') {
+      await this.produceBlock(undefined, false)
+    } else {
+      await transaction.wait()
+    }
+
+    console.log(chalk.green(`Set system call for ${callId} to contract ${contractId} / entrypoint ${entryPoint}\n`))
+  }
+
   async deployTokenContract(wif: string) {
     const signer = Signer.fromWif(wif)
     signer.provider = this.provider

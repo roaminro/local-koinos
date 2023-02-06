@@ -9,10 +9,14 @@ abi.koilib_types = abi.types
 
 jest.setTimeout(600000);
 
-const localKoinos = new LocalKoinos({
-  rpc: 'http://host.docker.internal:8080',
-  amqp: 'amqp://host.docker.internal:5672'
-});
+let localKoinos = new LocalKoinos();
+
+if (process.env.ENV === 'LOCAL') {
+  localKoinos = new LocalKoinos({
+    rpc: 'http://host.docker.internal:8080',
+    amqp: 'amqp://host.docker.internal:5672'
+  });
+}
 
 beforeAll(async () => {
   // start local-koinos node
