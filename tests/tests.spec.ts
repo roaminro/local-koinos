@@ -25,6 +25,7 @@ beforeAll(async () => {
 
   await localKoinos.deployKoinContract();
   await localKoinos.mintKoinDefaultAccounts();
+  await localKoinos.deployNameServiceContract();  
 });
 
 afterAll(async () => {
@@ -84,4 +85,12 @@ test("test1", async () => {
 
   totalSupply = await token.totalSupply();
   expect(totalSupply).toStrictEqual(undefined)
+
+  await localKoinos.setNameServiceRecord('koin', koin.address);
+
+  const koinAddress = await localKoinos.getAddressfromNameService('koin');
+  expect(koinAddress).toStrictEqual(koin.address)
+
+  const koinContractName = await localKoinos.getNamefromNameService(koin.address);
+  expect(koinContractName).toStrictEqual('koin')
 });

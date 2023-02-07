@@ -581,10 +581,10 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@koinos/proto-js@^0.4.5":
-  version "0.4.9"
-  resolved "https://registry.yarnpkg.com/@koinos/proto-js/-/proto-js-0.4.9.tgz#184e46b1287c6a945a630aa878fc7ceab9f5b412"
-  integrity sha512-gr6gdzGPt/9YB3q6OILWUgkKkYTME1I9hhGh8b/dCbRyeYlTAPjsCS7NkBb2CUxrtPmpIvSzisPICo2N0kBHhA==
+"@koinos/proto-js@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@koinos/proto-js/-/proto-js-1.0.3.tgz#414f0f8a1df6dcbbb03ff270b3c467f3e14b6814"
+  integrity sha512-jRl61ls269ZGTlPDm0H/ZJsWCt90OCXqs6WgVBIZdwhKLL9ZA8cW+Pai4zjuv4zWOOd4I124XVBIYg2yP0iIIA==
 
 "@multiformats/base-x@^4.0.1":
   version "4.0.1"

@@ -1,4 +1,4 @@
-import { Provider, Signer, Contract } from "koilib"
+import { Provider, Signer, Contract, utils } from "koilib"
 import { koinos } from '@koinos/proto-js'
 import amqp from 'amqplib'
 import chalk from 'chalk'
@@ -22,6 +22,11 @@ const DEFAULT_DOCKER_COMPOSE_ENV_FILE = path.resolve(__dirname, '../.env')
 
 const GENESIS_WIF = '5KYPA63Gx4MxQUqDM3PMckvX9nVYDUaLigTKAsLPesTyGmKmbR2'
 const KOIN_WIF = '5JbxDqUqx581iL9Po1mLvHMLkxnmjvypDdnmdLQvK5TzSpCFSgH'
+const NAME_SERVICE_WIF = '5JkJUcpmegiTTjEGwgcfHCNzZ1JQw3xci2U3sTtdzuruggXjEQN'
+
+const SET_RECORD_ENTRY = 0xe248c73a
+const GET_NAME_ENTRY = 0xe5070a16
+const	GET_ADDRESS_ENTRY = 0xa61ae5e8
 
 export class LocalKoinos {
   rpcUrl: string
@@ -32,6 +37,7 @@ export class LocalKoinos {
   provider: Provider
   genesisSigner: Signer
   koin: Token
+  nameService: Contract
   stopping: boolean = false
   intervalBlockProducerTimeout: NodeJS.Timeout | null = null
   accounts: Account[] = []
@@ -52,6 +58,17 @@ export class LocalKoinos {
     const koinSigner = Signer.fromWif(KOIN_WIF)
     koinSigner.provider = this.provider
     this.koin = new Token(koinSigner.address, koinSigner, true)
+
+    // NameService contract
+    const nameServiceSigner = Signer.fromWif(NAME_SERVICE_WIF)
+    nameServiceSigner.provider = this.provider
+
+    this.nameService = new Contract({
+      id: nameServiceSigner.address,
+      provider: this.provider,
+      signer: nameServiceSigner,
+      bytecode: fs.readFileSync(path.resolve(__dirname, '../system-contracts/name_service.wasm'))
+    })
 
     this.initAccounts()
   }
@@ -182,6 +199,93 @@ export class LocalKoinos {
     console.log(chalk.green(`Deployed Koin contract at address ${this.koin.address()}\n`))
 
     await this.setSystemContract(this.koin.address(), true, options)
+  }
+
+  async deployNameServiceContract(options?: Options) {
+    const { transaction } = await this.nameService.deploy()
+
+    if (options?.mode === 'manual') {
+      await this.produceBlock(undefined, false)
+    } else {
+      await transaction!.wait()
+    }
+
+    console.log(chalk.green(`Deployed name_service contract at address ${this.koin.address()}\n`))
+
+    await this.setSystemContract(this.nameService.getId(), true, options)
+
+    await this.setSystemCall(
+      koinos.chain.system_call_id.get_contract_name, 
+      this.nameService.getId(),
+      GET_NAME_ENTRY,
+      options
+    )
+
+    await this.setSystemCall(
+      koinos.chain.system_call_id.get_contract_address, 
+      this.nameService.getId(),
+      GET_ADDRESS_ENTRY,
+      options
+    )
+  }
+
+  async setNameServiceRecord(name: string, contractId: string, options?: Options) {
+    const operations = [
+      {
+        call_contract: {
+          contract_id: this.nameService.getId(),
+          entry_point: SET_RECORD_ENTRY,
+          args: utils.encodeBase64url(koinos.contracts.name_service.set_record_arguments.encode({
+            name,
+            address: utils.decodeBase58(contractId)
+          }).finish()),
+        }
+      }
+    ]
+
+    const preparedTx = await this.genesisSigner.prepareTransaction({
+      operations
+    })
+
+    const { transaction } = await this.genesisSigner.sendTransaction(preparedTx)
+
+    if (options?.mode === 'manual') {
+      await this.produceBlock(undefined, false)
+    } else {
+      await transaction.wait()
+    }
+
+    console.log(chalk.green(`Set name ${name} for contract ${contractId}\n`))
+  }
+
+  async getNamefromNameService(contractId: string) {
+    const operation = {
+      contract_id: this.nameService.getId(),
+      entry_point: GET_NAME_ENTRY,
+      args: utils.encodeBase64url(koinos.contracts.name_service.get_name_arguments.encode({
+        address: utils.decodeBase58(contractId)
+      }).finish()),
+    }
+
+    const result = await this.provider.readContract(operation)
+    const decodedResult = koinos.contracts.name_service.get_name_result.decode(utils.decodeBase64url(result.result))
+    
+    return decodedResult.value?.name;
+  }
+
+  async getAddressfromNameService(name: string) {
+    const operation = {
+      contract_id: this.nameService.getId(),
+      entry_point: GET_ADDRESS_ENTRY,
+      args: utils.encodeBase64url(koinos.contracts.name_service.get_address_arguments.encode({
+        name
+      }).finish()),
+    }
+
+    const result = await this.provider.readContract(operation);
+    const decodedResult = koinos.contracts.name_service.get_address_result.decode(utils.decodeBase64url(result.result))
+    
+    return decodedResult.value?.address ? utils.encodeBase58(decodedResult.value.address) : '';
   }
 
   async setSystemContract(contractId: string, systemContract: boolean, options?: Options) {
