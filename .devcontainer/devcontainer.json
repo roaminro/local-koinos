@@ -16,6 +16,6 @@
 		}
 	},
   "mounts": [
-    "source=${localEnv:HOME}/.npmrc,target=/home/node/.npmrc,type=bind",
+    "source=${localEnv:HOME}/.npmrc,target=/home/node/.npmrc,type=bind"
   ]
 }

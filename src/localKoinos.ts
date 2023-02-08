@@ -9,7 +9,7 @@ import { execSync } from 'child_process'
 import { sleep } from './util'
 import { Account, Options } from "./interface"
 import { Token } from "./token"
-import { Abi, BlockJson, DeployOptions, TransactionJson } from "koilib/lib/interface"
+import { Abi, BlockHeaderJson, BlockJson, DeployOptions, TransactionJson } from "koilib/lib/interface"
 
 const DEFAULT_RPC_URL = 'http://127.0.0.1:8080'
 const DEFAULT_AMQP_URL = 'amqp://guest:guest@localhost:5672/'
@@ -156,32 +156,36 @@ export class LocalKoinos {
     }
   }
 
-  async produceBlock(transactions?: TransactionJson, logs = true) {
+  async produceBlock(args: { transactions?: TransactionJson[], blockHeader?: BlockHeaderJson, logs?: boolean }) {
+    const { transactions, blockHeader, logs } = args;
+    const finalLog = logs === undefined || logs === true
+    
     if (this.stopping === true) return
     const headInfo = await this.provider.getHeadInfo()
 
-    const block = {
+    const finalBlock = {
       header: {
-        height: headInfo.head_topology.height ? `${Number(headInfo.head_topology.height) + 1}` : '1'
+        height: headInfo.head_topology.height ? `${Number(headInfo.head_topology.height) + 1}` : '1',
+        ...blockHeader
       },
-      transactions: []
+      transactions: [],
     } as BlockJson
 
     if (transactions) {
-      block.transactions?.push(transactions)
+      finalBlock.transactions?.push(...transactions)
     } else {
       // eslint-disable-next-line camelcase
       const { pending_transactions } = await this.provider.call<{ pending_transactions: any }>('mempool.get_pending_transactions', { limit: '500' })
       // eslint-disable-next-line camelcase
-      block.transactions = pending_transactions ? pending_transactions.map((pendingTx: any) => pendingTx.transaction) : []
+      finalBlock.transactions = pending_transactions ? pending_transactions.map((pendingTx: any) => pendingTx.transaction) : []
     }
 
-    const preparedBlock = await this.genesisSigner.prepareBlock(block)
+    const preparedBlock = await this.genesisSigner.prepareBlock(finalBlock)
     const signedBlock = await this.genesisSigner.signBlock(preparedBlock)
     const { receipt } = await this.provider.submitBlock(signedBlock)
 
-    if (logs) {
-      console.log(chalk.blue(`Produced block (${block.header?.height}) with ${block.transactions?.length} transaction(s) (disk_storage_used: ${(receipt as any).disk_storage_used | 0} / network_bandwidth_used: ${(receipt as any).network_bandwidth_used | 0} / compute_bandwidth_used: ${(receipt as any).compute_bandwidth_used | 0})`))
+    if (finalLog) {
+      console.log(chalk.blue(`Produced block (${finalBlock.header?.height}) with ${finalBlock.transactions?.length} transaction(s) (disk_storage_used: ${(receipt as any).disk_storage_used | 0} / network_bandwidth_used: ${(receipt as any).network_bandwidth_used | 0} / compute_bandwidth_used: ${(receipt as any).compute_bandwidth_used | 0})`))
     }
 
     return receipt
@@ -191,7 +195,7 @@ export class LocalKoinos {
     const { transaction } = await this.koin.deploy()
 
     if (options?.mode === 'manual') {
-      await this.produceBlock(undefined, false)
+      await this.produceBlock({ logs: false })
     } else {
       await transaction!.wait()
     }
@@ -205,7 +209,7 @@ export class LocalKoinos {
     const { transaction } = await this.nameService.deploy()
 
     if (options?.mode === 'manual') {
-      await this.produceBlock(undefined, false)
+      await this.produceBlock({ logs: false })
     } else {
       await transaction!.wait()
     }
@@ -250,7 +254,7 @@ export class LocalKoinos {
     const { transaction } = await this.genesisSigner.sendTransaction(preparedTx)
 
     if (options?.mode === 'manual') {
-      await this.produceBlock(undefined, false)
+      await this.produceBlock({ logs: false })
     } else {
       await transaction.wait()
     }
@@ -305,7 +309,7 @@ export class LocalKoinos {
     const { transaction } = await this.genesisSigner.sendTransaction(preparedTx)
 
     if (options?.mode === 'manual') {
-      await this.produceBlock(undefined, false)
+      await this.produceBlock({ logs: false })
     } else {
       await transaction.wait()
     }
@@ -335,7 +339,7 @@ export class LocalKoinos {
     const { transaction } = await this.genesisSigner.sendTransaction(preparedTx)
 
     if (options?.mode === 'manual') {
-      await this.produceBlock(undefined, false)
+      await this.produceBlock({ logs: false })
     } else {
       await transaction.wait()
     }
@@ -378,7 +382,7 @@ export class LocalKoinos {
     const { transaction } = await this.koin.signer.sendTransaction(preparedTx)
 
     if (options?.mode === 'manual') {
-      await this.produceBlock(undefined, false)
+      await this.produceBlock({ logs: false })
     } else {
       await transaction.wait()
     }
@@ -433,7 +437,7 @@ export class LocalKoinos {
   }
 
   async intervalBlockProducer(interval: number, logs = true) {
-    await this.produceBlock(undefined, logs)
+    await this.produceBlock({ logs: false })
     this.intervalBlockProducerTimeout = setTimeout(() => this.intervalBlockProducer(interval, logs), interval)
   }
 
@@ -450,7 +454,7 @@ export class LocalKoinos {
     channel.consume(
       q1.queue,
       async () => {
-        await this.produceBlock(undefined, logs)
+        await this.produceBlock({ logs: false })
       },
       {
         noAck: true

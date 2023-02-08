@@ -1,7 +1,7 @@
 {
   "name": "@roamin/local-koinos",
   "description": "Local Koinos CLI'",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "main": "lib/index.js",
   "license": "MIT",
   "bin": {
@@ -31,8 +31,7 @@
     "lint": "eslint",
     "build": "rimraf lib && tsc",
     "prepublishOnly": "yarn lint && yarn build",
-    "test": "jest",
-    "ci": "yarn lint && yarn build && ENV=CI yarn test",
-    "local-ci": "yarn lint && yarn build && ENV=LOCAL yarn test"
+    "ci": "yarn lint && yarn build && ENV=CI jest -i",
+    "local-ci": "yarn lint && yarn build && ENV=LOCAL jest -i"
   }
 }
