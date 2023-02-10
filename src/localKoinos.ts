@@ -156,9 +156,10 @@ export class LocalKoinos {
     }
   }
 
-  async produceBlock(args: { transactions?: TransactionJson[], blockHeader?: BlockHeaderJson, logs?: boolean }) {
-    const { transactions, blockHeader, logs } = args;
-    const finalLog = logs === undefined || logs === true
+  async produceBlock(args?: { transactions?: TransactionJson[], blockHeader?: BlockHeaderJson, logs?: boolean }) {
+    const transactions = args?.transactions
+    const blockHeader = args?.blockHeader
+    const logs = args?.logs === undefined || args?.logs === true
     
     if (this.stopping === true) return
     const headInfo = await this.provider.getHeadInfo()
@@ -184,7 +185,7 @@ export class LocalKoinos {
     const signedBlock = await this.genesisSigner.signBlock(preparedBlock)
     const { receipt } = await this.provider.submitBlock(signedBlock)
 
-    if (finalLog) {
+    if (logs) {
       console.log(chalk.blue(`Produced block (${finalBlock.header?.height}) with ${finalBlock.transactions?.length} transaction(s) (disk_storage_used: ${(receipt as any).disk_storage_used | 0} / network_bandwidth_used: ${(receipt as any).network_bandwidth_used | 0} / compute_bandwidth_used: ${(receipt as any).compute_bandwidth_used | 0})`))
     }
 
@@ -413,7 +414,13 @@ export class LocalKoinos {
     console.log(chalk.green(`Minted ${value} tokens (${token.address()}) to ${to}\n`))
   }
 
-  async deployContract(wif: string, wasm: string | Buffer, abi: Abi, options?: DeployOptions) {
+  async deployContract(
+    wif: string, 
+    wasm: string | Buffer, 
+    abi: Abi, 
+    options?: Options,
+    deployOptions?: DeployOptions
+  ) {
     const signer = Signer.fromWif(wif)
     signer.provider = this.provider
 
@@ -427,9 +434,13 @@ export class LocalKoinos {
       bytecode
     })
 
-    const { transaction } = await contract.deploy(options)
+    const { transaction } = await contract.deploy(deployOptions)
 
-    await transaction!.wait()
+    if (options?.mode === 'manual') {
+      await this.produceBlock({ logs: false })
+    } else {
+      await transaction!.wait()
+    }
 
     console.log(chalk.green(`Deployed contract at address ${signer.address}\n`))
 

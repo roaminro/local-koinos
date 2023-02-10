@@ -6,7 +6,7 @@ export interface Options {
   dockerComposeFile?: string;
   envFile?: string;
   nodeName?: string;
-  mode?: string;
+  mode?: 'manual' | 'interval' | 'auto';
   logs?: boolean;
   miningInterval?: boolean;
 }

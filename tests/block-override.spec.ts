@@ -31,7 +31,7 @@ afterAll(async () => {
 });
 
 test("test1", async () => {
-  const [genesis, koin, acct1] = localKoinos.getAccounts();
+  const [genesis, koin, acct1, acct2] = localKoinos.getAccounts();
 
   const contract = new Contract({
     id: acct1.address,
@@ -55,9 +55,14 @@ test("test1", async () => {
     }
   })
 
-  const result = await contract.functions.add({ x: '4', y: '5' });
+  let result = await contract.functions.add({ x: '4', y: '5' });
   expect(result.result!.value).toBe('9');
 
   const headInfo = await localKoinos.provider.getHeadInfo();
   expect(headInfo.head_block_time).toBe(now);
+
+  // @ts-ignore abi provided here is compatible with Koilib
+  const contract2 = await localKoinos.deployContract(acct2.wif, './tests/calculator-contract.wasm', abi, { mode: 'manual' })
+  result = await contract2.functions.add({ x: '4', y: '5' });
+  expect(result.result!.value).toBe('9');
 });
