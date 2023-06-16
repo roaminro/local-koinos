@@ -17,7 +17,7 @@ const KOINOS_AMQP_EXCHANGE = 'koinos.event'
 
 const DEFAULT_MINING_INTERVAL = 3000
 
-const DEFAULT_DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', '/docker-compose.yml')
+const DEFAULT_DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'docker-compose.yml')
 const DEFAULT_DOCKER_COMPOSE_ENV_FILE = path.resolve(__dirname, '..', '.env')
 
 const GENESIS_WIF = '5KYPA63Gx4MxQUqDM3PMckvX9nVYDUaLigTKAsLPesTyGmKmbR2'
