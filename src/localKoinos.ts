@@ -17,8 +17,8 @@ const KOINOS_AMQP_EXCHANGE = 'koinos.event'
 
 const DEFAULT_MINING_INTERVAL = 3000
 
-const DEFAULT_DOCKER_COMPOSE_FILE = path.resolve(__dirname, '../docker-compose.yml')
-const DEFAULT_DOCKER_COMPOSE_ENV_FILE = path.resolve(__dirname, '../.env')
+const DEFAULT_DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', '/docker-compose.yml')
+const DEFAULT_DOCKER_COMPOSE_ENV_FILE = path.resolve(__dirname, '..', '.env')
 
 const GENESIS_WIF = '5KYPA63Gx4MxQUqDM3PMckvX9nVYDUaLigTKAsLPesTyGmKmbR2'
 const KOIN_WIF = '5JbxDqUqx581iL9Po1mLvHMLkxnmjvypDdnmdLQvK5TzSpCFSgH'
@@ -67,7 +67,7 @@ export class LocalKoinos {
       id: nameServiceSigner.address,
       provider: this.provider,
       signer: nameServiceSigner,
-      bytecode: fs.readFileSync(path.resolve(__dirname, '../system-contracts/name_service.wasm'))
+      bytecode: fs.readFileSync(path.resolve(__dirname, '../system-contracts/', 'name_service.wasm'))
     })
 
     this.initAccounts()
