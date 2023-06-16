@@ -47,7 +47,7 @@ export class Token {
     }, options)
   }
 
-  transfer(from: string, to: string, value: string | number, options?: DeployOptions) {
+  transfer(from: string, to: string, value: string | number, options?: TransactionOptions) {
     return this.contract.functions.transfer({
       from,
       to,
