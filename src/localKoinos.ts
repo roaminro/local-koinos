@@ -123,7 +123,7 @@ export class LocalKoinos {
 
     const cmd = `composecmd() { if [ -x "$(command -v docker-compose-v1)" ] ; then docker-compose-v1 "$@" ; else docker-compose "$@" ; fi ; } ; composecmd -p ${this.nodeName} -f ${this.dockerComposeFile} --env-file ${this.envFile} up -d`
     console.log(chalk.blue(cmd))
-    spawnSync('bash', ['-c', cmd], { stdio: 'inherit' })
+    spawnSync('bash', ['-c', cmd])
 
     console.log(chalk.blue('Waiting for chain service to start...\n'))
     await this.awaitChain()
@@ -141,7 +141,7 @@ export class LocalKoinos {
 
     const cmd = `composecmd() { if [ -x "$(command -v docker-compose-v1)" ] ; then docker-compose-v1 "$@" ; else docker-compose "$@" ; fi ; } ; composecmd -p ${this.nodeName} -f ${this.dockerComposeFile} down -v`
     console.log(chalk.blue(cmd))
-    spawnSync('bash', ['-c', cmd], { stdio: 'inherit' })
+    spawnSync('bash', ['-c', cmd])
 
     console.log(chalk.green('Node successfuly stopped'))
   }
@@ -515,7 +515,7 @@ export class LocalKoinos {
   async restartChain() {
     const cmd = `docker restart ${this.nodeName}_chain_1`
     console.log(chalk.blue(cmd))
-    spawnSync('bash', ['-c', cmd], { stdio: 'inherit' })
+    spawnSync('bash', ['-c', cmd])
 
     console.log(chalk.green('Chain was successfully restarted\n'))
   }
