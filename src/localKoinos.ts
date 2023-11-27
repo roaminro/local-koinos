@@ -17,6 +17,12 @@ import {
   TransactionJson,
 } from "koilib/lib/interface";
 
+// @ts-ignore
+import * as collectionAbi from "../dummy-contracts/collection.json";
+
+// @ts-ignore koilib_types is needed when using koilib
+collectionAbi.koilib_types = collectionAbi.types;
+
 const DEFAULT_RPC_URL = "http://127.0.0.1:8080";
 const DEFAULT_AMQP_URL = "amqp://guest:guest@localhost:5672/";
 const KOINOS_AMQP_EXCHANGE = "koinos.event";
@@ -452,6 +458,36 @@ export class LocalKoinos {
     );
 
     return token;
+  }
+
+  async deployCollectionContract(wif: string) {
+    const signer = Signer.fromWif(wif);
+    signer.provider = this.provider;
+
+    const bytecode = fs.readFileSync(
+      path.resolve(__dirname, "../dummy-contracts/collection.wasm")
+    );
+
+    const contract = new Contract({
+      id: signer.address,
+      // @ts-ignore koilib_types is needed when using koilib
+      abi: collectionAbi,
+      provider: signer.provider,
+      signer,
+      bytecode,
+    });
+
+    const { transaction } = await contract.deploy();
+
+    await transaction!.wait();
+
+    console.log(
+      chalk.green(
+        `\nDeployed Collection contract at address ${contract.getId()}\n`
+      )
+    );
+
+    return contract;
   }
 
   async mintKoinDefaultAccounts(options?: Options) {

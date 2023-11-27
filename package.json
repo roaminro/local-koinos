@@ -1,7 +1,7 @@
 {
   "name": "@roamin/local-koinos",
   "description": "Local Koinos CLI'",
-  "version": "0.4.13",
+  "version": "0.4.14",
   "main": "lib/index.js",
   "license": "MIT",
   "bin": {

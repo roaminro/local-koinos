@@ -1,4 +1,4 @@
-import { LocalKoinos, Collection } from "../lib";
+import { LocalKoinos } from "../lib/";
 jest.setTimeout(600000);
 
 let localKoinos = new LocalKoinos();
@@ -25,10 +25,7 @@ afterAll(() => {
 });
 
 test("collection", async () => {
-  let collection = new Collection(coll.address, coll.signer);
-  const deployment = await collection.deploy();
-
-  await deployment.transaction?.wait();
+  const collection = await localKoinos.deployCollectionContract(coll.wif);
 
   let res = await collection.functions.mint({
     to: acct1.address,
@@ -37,9 +34,7 @@ test("collection", async () => {
 
   await res.transaction?.wait();
 
-  const eventData = await collection.contract.decodeEvent(
-    res.receipt!.events[0]
-  );
+  const eventData = await collection.decodeEvent(res.receipt!.events[0]);
 
   expect(eventData.args.token_id).toStrictEqual("0x31");
   expect(eventData.args.to).toStrictEqual(acct1.address);
