@@ -1,22 +1,22 @@
-import { LocalKoinos, Token, Signer, Contract } from '../lib';
-import fs from 'fs';
+import { LocalKoinos, Token, Signer, Contract } from "../lib";
+import fs from "fs";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore 
-import * as abi from './calculator-abi.json';
-import { TransactionJson } from 'koilib/lib/interface';
+// @ts-ignore
+import * as abi from "./calculator-abi.json";
+import { TransactionJson } from "koilib/lib/interface";
 
 // @ts-ignore koilib_types is needed when using koilib
-abi.koilib_types = abi.types
+abi.koilib_types = abi.types;
 
 jest.setTimeout(600000);
 
 let localKoinos = new LocalKoinos();
 
-if (process.env.ENV === 'LOCAL') {
+if (process.env.DEVCONTAINER === "true") {
   localKoinos = new LocalKoinos({
-    rpc: 'http://host.docker.internal:8080',
-    amqp: 'amqp://host.docker.internal:5672'
+    rpc: "http://host.docker.internal:8080",
+    amqp: "amqp://host.docker.internal:5672",
   });
 }
 
@@ -39,30 +39,36 @@ test("test1", async () => {
     // @ts-ignore abi provided here is compatible with Koilib
     abi,
     signer: acct1.signer,
-    bytecode: fs.readFileSync('./tests/calculator-contract.wasm')
-  })
+    bytecode: fs.readFileSync("./tests/calculator-contract.wasm"),
+  });
 
   const tx = await contract.deploy({
-    sendTransaction: false
-  })
+    sendTransaction: false,
+  });
 
-  const now = new Date().getTime().toString()
+  const now = new Date().getTime().toString();
 
   await localKoinos.produceBlock({
     transactions: [tx.transaction as TransactionJson],
     blockHeader: {
-      timestamp: now
-    }
-  })
+      timestamp: now,
+    },
+  });
 
-  let result = await contract.functions.add({ x: '4', y: '5' });
-  expect(result.result!.value).toBe('9');
+  let result = await contract.functions.add({ x: "4", y: "5" });
+  expect(result.result!.value).toBe("9");
 
   const headInfo = await localKoinos.provider.getHeadInfo();
   expect(headInfo.head_block_time).toBe(now);
 
   // @ts-ignore abi provided here is compatible with Koilib
-  const contract2 = await localKoinos.deployContract(acct2.wif, './tests/calculator-contract.wasm', abi, { mode: 'manual' })
-  result = await contract2.functions.add({ x: '4', y: '5' });
-  expect(result.result!.value).toBe('9');
+  const contract2 = await localKoinos.deployContract(
+    acct2.wif,
+    "./tests/calculator-contract.wasm",
+    // @ts-ignore koilib_types is needed when using koilib
+    abi,
+    { mode: "manual" }
+  );
+  result = await contract2.functions.add({ x: "4", y: "5" });
+  expect(result.result!.value).toBe("9");
 });

@@ -1,4 +1,4 @@
-
-export { LocalKoinos } from './localKoinos'
-export { Token } from './token'
-export * from 'koilib'
+export { LocalKoinos } from "./localKoinos";
+export { Token } from "./token";
+export { Collection } from "./collection";
+export * from "koilib";

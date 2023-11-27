@@ -1,20 +1,20 @@
-import { LocalKoinos, Token, Signer } from '../lib';
+import { LocalKoinos, Token, Signer } from "../lib";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore 
-import * as abi from './calculator-abi.json';
+// @ts-ignore
+import * as abi from "./calculator-abi.json";
 
 // @ts-ignore koilib_types is needed when using koilib
-abi.koilib_types = abi.types
+abi.koilib_types = abi.types;
 
 jest.setTimeout(600000);
 
 let localKoinos = new LocalKoinos();
 
-if (process.env.ENV === 'LOCAL') {
+if (process.env.DEVCONTAINER === "true") {
   localKoinos = new LocalKoinos({
-    rpc: 'http://host.docker.internal:8080',
-    amqp: 'amqp://host.docker.internal:5672'
+    rpc: "http://host.docker.internal:8080",
+    amqp: "amqp://host.docker.internal:5672",
   });
 }
 
@@ -25,7 +25,7 @@ beforeAll(async () => {
 
   await localKoinos.deployKoinContract();
   await localKoinos.mintKoinDefaultAccounts();
-  await localKoinos.deployNameServiceContract();  
+  await localKoinos.deployNameServiceContract();
 });
 
 afterAll(async () => {
@@ -37,12 +37,19 @@ test("test1", async () => {
   const [genesis, koin, acct1, tokenAcct, acct2] = localKoinos.getAccounts();
 
   // @ts-ignore abi provided here is compatible with Koilib
-  const contract = await localKoinos.deployContract(acct1.wif, './tests/calculator-contract.wasm', abi);
+  const contract = await localKoinos.deployContract(
+    acct1.wif,
+    "./tests/calculator-contract.wasm",
+    // @ts-ignore koilib_types is needed when using koilib
+    abi
+  );
 
-  let result = await contract.functions.add({ x: '4', y: '5' });
-  expect(result.result!.value).toBe('9');
+  let result = await contract.functions.add({ x: "4", y: "5" });
+  expect(result.result!.value).toBe("9");
 
-  const signer = Signer.fromWif('L59UtJcTdNBnrH2QSBA5beSUhRufRu3g6tScDTite6Msuj7U93tM');
+  const signer = Signer.fromWif(
+    "L59UtJcTdNBnrH2QSBA5beSUhRufRu3g6tScDTite6Msuj7U93tM"
+  );
   signer.provider = localKoinos.getProvider();
   let tkn = new Token(localKoinos.koin.address(), signer);
 
@@ -50,15 +57,23 @@ test("test1", async () => {
     await tkn.mint(signer.address, 40);
   } catch (error) {
     // @ts-ignore
-    expect(error.message).toContain('can only mint token with contract authority');
+    expect(error.message).toContain(
+      "can only mint token with contract authority"
+    );
   }
 
   try {
-    const signer2 = Signer.fromWif('5KL5GNq42Syr52dUUi4UhQ5cANwNr9xgxKivF9YjtGdM7BBjuks');
+    const signer2 = Signer.fromWif(
+      "5KL5GNq42Syr52dUUi4UhQ5cANwNr9xgxKivF9YjtGdM7BBjuks"
+    );
     signer2.provider = localKoinos.getProvider();
     tkn = new Token(localKoinos.koin.address(), signer2);
 
-    const { transaction, receipt } = await tkn.transfer(signer2.address, signer.address, 40000000000000000);
+    const { transaction, receipt } = await tkn.transfer(
+      signer2.address,
+      signer.address,
+      40000000000000000
+    );
     await transaction!.wait();
   } catch (error) {
     // @ts-ignore
@@ -70,27 +85,29 @@ test("test1", async () => {
   await result.transaction!.wait();
 
   let balance = await token.balanceOf(acct2.address);
-  expect(balance).toStrictEqual('10')
+  expect(balance).toStrictEqual("10");
 
   let totalSupply = await token.totalSupply();
-  expect(totalSupply).toStrictEqual('10')
+  expect(totalSupply).toStrictEqual("10");
 
-  token = new Token(tokenAcct.address, acct2.signer)
+  token = new Token(tokenAcct.address, acct2.signer);
 
   result = await token.burn(acct2.address, 10);
   await result.transaction!.wait();
 
   balance = await token.balanceOf(acct2.address);
-  expect(balance).toStrictEqual('0')
+  expect(balance).toStrictEqual("0");
 
   totalSupply = await token.totalSupply();
-  expect(totalSupply).toStrictEqual(undefined)
+  expect(totalSupply).toStrictEqual(undefined);
 
-  await localKoinos.setNameServiceRecord('koin', koin.address);
+  await localKoinos.setNameServiceRecord("koin", koin.address);
 
-  const koinAddress = await localKoinos.getAddressfromNameService('koin');
-  expect(koinAddress).toStrictEqual(koin.address)
+  const koinAddress = await localKoinos.getAddressfromNameService("koin");
+  expect(koinAddress).toStrictEqual(koin.address);
 
-  const koinContractName = await localKoinos.getNamefromNameService(koin.address);
-  expect(koinContractName).toStrictEqual('koin')
+  const koinContractName = await localKoinos.getNamefromNameService(
+    koin.address
+  );
+  expect(koinContractName).toStrictEqual("koin");
 });
