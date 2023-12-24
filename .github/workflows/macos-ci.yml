@@ -1,4 +1,4 @@
-name: Test
+name: macos-ci
 
 on:
   push:
@@ -14,16 +14,28 @@ jobs:
 
     strategy:
       matrix:
-        platform: [ubuntu-latest]
+        platform: [macos-13]
         node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+ 
+      - name: Install Docker
+        run: |-
+          # Install Docker
+          brew install docker
+          # Docker on macOS misses daemon due to licensing, so install colima as runtime
+          brew install colima
+          # Start the daemon
+          colima start
+  
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: Install dependencies
         run: yarn --frozen-lockfile
+
       - name: Run ci
         run: yarn ci

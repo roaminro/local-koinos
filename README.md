@@ -1,4 +1,5 @@
-[![Test](https://github.com/roaminro/local-koinos/actions/workflows/test.yml/badge.svg)](https://github.com/roaminro/local-koinos/actions/workflows/test.yml)
+[![ubuntu-ci](https://github.com/roaminro/local-koinos/actions/workflows/ubuntu-ci.yml/badge.svg)](https://github.com/roaminro/local-koinos/actions/workflows/ubuntu-ci.yml)
+[![macos-ci](https://github.com/roaminro/local-koinos/actions/macos/ubuntu-ci.yml/badge.svg)](https://github.com/roaminro/local-koinos/actions/workflows/macos-ci.yml)
 
 # Local-Koinos
 
