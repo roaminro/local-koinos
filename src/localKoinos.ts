@@ -24,7 +24,7 @@ import * as collectionAbi from "../dummy-contracts/collection.json";
 collectionAbi.koilib_types = collectionAbi.types;
 
 const DEFAULT_RPC_URL = "http://127.0.0.1:8080";
-const DEFAULT_AMQP_URL = "amqp://guest:guest@localhost:5672/";
+const DEFAULT_AMQP_URL = "amqp://guest:guest@127.0.0.1:5672/";
 const KOINOS_AMQP_EXCHANGE = "koinos.event";
 
 const DEFAULT_MINING_INTERVAL = 3000;
