@@ -151,7 +151,7 @@ export class LocalKoinos {
       });
     }
 
-    if (cmdResult.stderr.toString().trim()) {
+    if (cmdResult.stderr.toString().trim().length) {
       throw new Error(cmdResult.stderr.toString().trim());
     }
   }
