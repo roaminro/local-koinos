@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ master ]
 
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
 jobs:
   build:
 
@@ -14,21 +21,25 @@ jobs:
 
     strategy:
       matrix:
-        platform: [macos-latest]
+        platform: [macos-13]
         node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
     
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
+      - name: Fix Python conflicts between macOS runner and Homebrew
+        run: |
+          # see https://github.com/actions/setup-python/issues/577
+          brew list -1 | grep python | while read formula; do brew unlink $formula; brew link --overwrite $formula; done
+
       - name: Install homebrew dependencies
         run: |
           set -x
           sudo chmod ugo+w /usr/local/bin
-          brew install --overwrite python@3.11
           brew install docker docker-compose lima
 
       - name: Install and start Colima
