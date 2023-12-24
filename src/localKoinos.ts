@@ -153,7 +153,7 @@ export class LocalKoinos {
 
     if (cmdResult.status !== 0) {
       throw new Error(
-        `An error occured while running the foolowing command: ${chalk.blue(
+        `An error occured while running the following command: ${chalk.blue(
           cmd
         )}\n${chalk.red(cmdResult.stderr.toString().trim())}`
       );
