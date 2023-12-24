@@ -151,8 +151,12 @@ export class LocalKoinos {
       });
     }
 
-    if (cmdResult.stderr.toString().trim().length) {
-      throw new Error(cmdResult.stderr.toString().trim());
+    if (cmdResult.status !== 0) {
+      throw new Error(
+        `An error occured while running the foolowing command: ${chalk.blue(
+          cmd
+        )}\n${chalk.red(cmdResult.stderr.toString().trim())}`
+      );
     }
   }
 
