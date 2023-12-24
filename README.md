@@ -1,5 +1,6 @@
 [![ubuntu-ci](https://github.com/roaminro/local-koinos/actions/workflows/ubuntu-ci.yml/badge.svg)](https://github.com/roaminro/local-koinos/actions/workflows/ubuntu-ci.yml)
-[![macos-ci](https://github.com/roaminro/local-koinos/actions/macos/ubuntu-ci.yml/badge.svg)](https://github.com/roaminro/local-koinos/actions/workflows/macos-ci.yml)
+[![macos-ci](https://github.com/roaminro/local-koinos/actions/workflows/macos-ci.yml/badge.svg)](https://github.com/roaminro/local-koinos/actions/workflows/macos-ci.yml)
+[![windows-ci](https://github.com/roaminro/local-koinos/actions/workflows/windows-ci.yml/badge.svg)](https://github.com/roaminro/local-koinos/actions/workflows/windows-ci.yml)
 
 # Local-Koinos
 

@@ -140,10 +140,19 @@ export class LocalKoinos {
   }
 
   private executeCmd(cmd: string) {
+    let cmdResult;
     if (IS_WINDOWS) {
-      spawnSync("cmd.exe", ["/c", cmd], { stdio: "inherit" });
+      cmdResult = spawnSync("cmd.exe", ["/c", cmd], {
+        stdio: ["inherit", "inherit", "pipe"],
+      });
     } else {
-      spawnSync("bash", ["-c", cmd], { stdio: "inherit" });
+      cmdResult = spawnSync("bash", ["-c", cmd], {
+        stdio: ["inherit", "inherit", "pipe"],
+      });
+    }
+
+    if (cmdResult.stderr.toString().trim()) {
+      throw new Error(cmdResult.stderr.toString().trim());
     }
   }
 
