@@ -7,7 +7,7 @@ Local-Koinos is a set of scripts and tools that will help you spin up a devnet o
 
 ## Install Docker (and Docker-Compose)
 
-You will need to install Docker on MacOS, Linux or Windows first. You can follow their instructions for installation [here](https://www.docker.com/products/docker-desktop). Docker desktop comes with a recent version of docker-compose.
+You will need to install Docker on MacOS, Linux or Windows first. You can follow their instructions for installation [here](https://www.docker.com/products/docker-desktop). Docker desktop comes with a recent version of docker-compose, but make sure it's at least docker-compose v2.
 
 ## Installation
 ```sh
