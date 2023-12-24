@@ -139,6 +139,15 @@ export class LocalKoinos {
 
   async startNode() {
     console.log(chalk.blue(`Starting node ${this.nodeName}...\n`));
+    console.log(
+      chalk.blue(`Node options:
+    - Node name: ${this.nodeName}
+    - RPC url: ${this.rpcUrl}
+    - AMQP url: ${this.amqpurl}
+    - Docker-Compose file: ${this.dockerComposeFile}
+    - Env file: ${this.envFile}
+    `)
+    );
 
     const cmd = `composecmd() { if [ -x "$(command -v docker-compose-v1)" ] ; then docker-compose-v1 "$@" ; else docker-compose "$@" ; fi ; } ; composecmd -p ${this.nodeName} -f ${this.dockerComposeFile} --env-file ${this.envFile} up -d`;
     console.log(chalk.blue(cmd));
