@@ -2422,7 +2422,7 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-koilib@^5.6.1:
+koilib@5.6.1:
   version "5.6.1"
   resolved "https://registry.yarnpkg.com/koilib/-/koilib-5.6.1.tgz#72f61455959ce00c23ec19d99467cb75e999985b"
   integrity sha512-Ulon6gOYIVf11XzQ18BwY/p6VHdQ3JyIgqgZ/RsATg/VuUUvWoZ8w4nPNBBMohPhXh5lmu/O1E/wQ8BGxfpEvg==
